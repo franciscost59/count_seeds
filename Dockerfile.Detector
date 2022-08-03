@@ -1,0 +1,31 @@
+FROM rocker/rstudio:3.6.3
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libxml2-dev \
+    zlib1g-dev \
+    libfftw3-dev \
+    gdal-bin \
+    libgdal-dev \
+    libxt-dev
+
+RUN apt-get update && apt-get install -y --no-install-recommends gdal-bin proj-bin libgdal-dev libproj-dev libudunits2-dev littler
+RUN install2.r --error \
+    sp \
+    raster \
+    rgdal \
+    scales \
+    xml2 \
+    git2r \
+    usethis \
+    fftwtools \
+    devtools \
+    argparse \
+    sf \
+    logging
+
+RUN installGithub.r filipematias23/FIELDimageR
+
+COPY ./detector /worker_detector
+WORKDIR /worker_detector
+
+ENTRYPOINT ["Rscript", "Count_seeds.R"]
